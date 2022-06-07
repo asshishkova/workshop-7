@@ -1,16 +1,30 @@
 const fs = require('fs').promises;
 const jediFile = 'jedi_list.json';
 
-async function replaceJedi(jediId, jedi) {
-    //TODO write logic replacing jedi by it's id with newly passed jedi
+async function replaceJedi(jediId, newJedi) {
+  // const data = await getAll();
+  // const index = data.findIndex(value => {
+  //     return value.id === jediId;
+  // });
+  // const jedi = data[index];
+  // Object.assign(jedi, newJedi);
+  // await writeJediFile(data);
+  // return jedi;
+  const oldJedi = await getJedi(jediId);
+  await deleteJedi(jediId);
+  return await addJedi({...oldJedi, ...newJedi});
 }
 
 async function deleteJedi(id) {
     //TODO Delete jedi by given id in our file
+    const data = await readJediFile();
+    const updatedData = data.filter((value) => value.id !== id);
+    await writeJediFile(updatedData);
 }
 
 async function getAll() {
-    //TODO obtain all saved jedis and return it to callee
+    const data = await readJediFile();
+    return data;
 }
 
 async function addJedi(jedi) {
@@ -20,6 +34,7 @@ async function addJedi(jedi) {
     }
     data.push(jedi);
     await writeJediFile(data);
+    return jedi;
 }
 
 async function getJedi(id) {
@@ -30,7 +45,7 @@ async function getJedi(id) {
 async function readJediFile() {
     try {
         const data = await fs.readFile(jediFile);
-        console.log(data.toString());
+        // console.log(data.toString());
         return JSON.parse(data.toString());
     } catch (error) {
         console.error(`Got an error trying to read the file: ${error.message}`);
